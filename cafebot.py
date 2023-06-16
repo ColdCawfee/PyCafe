@@ -1249,7 +1249,439 @@ async def noise(ctx: lightbulb.context.Context):
         os.remove(f"noise-{ctx.user.id}.png")
     except:
         await ctx.respond("Error! Something went wrong." + traceback.format_exc())
-        
+
+@bot.command
+@lightbulb.command("highboost", "Highboosts the image.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def highboost(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        dst = cv2.Laplacian(gray, cv2.CV_64F)
+        dst = np.uint8(np.absolute(dst))
+        cv2.imwrite(f"highboost-{ctx.user.id}.png", dst)
+        await ctx.respond("Highboost applied!")
+        f = hikari.File(f"highboost-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"highboost-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("tophat", "Applies a tophat filter (not an actual top hat).")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def tophat(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        kernel = np.ones((5, 5), np.uint8)
+        opening = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, kernel)
+        cv2.imwrite(f"tophat-{ctx.user.id}.png", opening)
+        await ctx.respond("Tophat applied!")
+        f = hikari.File(f"tophat-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"tophat-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("blackhat", "Applies a blackhat filter.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def blackhat(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        kernel = np.ones((5, 5), np.uint8)
+        closing = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
+        cv2.imwrite(f"blackhat-{ctx.user.id}.png", closing)
+        await ctx.respond("Blackhat applied!")
+        f = hikari.File(f"blackhat-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"blackhat-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.option("power", "Amount.", type=int, required=True)
+@lightbulb.command("powerlaw", "Not sure what this one does.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def powerlaw(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        power = ctx.options.power
+        img = cv2.pow(img, power)
+        cv2.imwrite(f"powerlaw-{ctx.user.id}.png", img)
+        await ctx.respond("Powerlaw applied!")
+        f = hikari.File(f"powerlaw-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"powerlaw-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("greenchannel", "Makes the image only green.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def greenchannel(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img[:,:,0] = 0
+        img[:,:,2] = 0
+        cv2.imwrite(f"green-{ctx.user.id}.png", img)
+        await ctx.respond("Green channel applied!")
+        f = hikari.File(f"contgreenrast-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"green-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("yiq", "Converts image to YIQ.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def yiq(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+        img[:,:,0] = img[:,:,0] * 1.5
+        img[:,:,1] = img[:,:,1] * 1.5
+        img[:,:,2] = img[:,:,2] * 1.5
+        cv2.imwrite(f"yiq-{ctx.user.id}.png", img)
+        await ctx.respond("Converted to YIQ!")
+        f = hikari.File(f"yiq-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"yiq-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("yuv", "Converts the image to YUV.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def yuv(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
+        img[:,:,0] = img[:,:,0] * 1.5
+        img[:,:,1] = img[:,:,1] * 1.5
+        img[:,:,2] = img[:,:,2] * 1.5
+        cv2.imwrite(f"yuv-{ctx.user.id}.png", img)
+        await ctx.respond("Converted to YUV!")
+        f = hikari.File(f"yuv-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"yuv-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("hsl", "Converts image into HSL.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def hsl(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        img[:,:,0] = img[:,:,0] * 1.5
+        img[:,:,1] = img[:,:,1] * 1.5
+        img[:,:,2] = img[:,:,2] * 1.5
+        cv2.imwrite(f"hsl-{ctx.user.id}.png", )
+        await ctx.respond("Converted to HSL!")
+        f = hikari.File(f"hsl-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"hsl-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("hls", "Converts image to HLS.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def hls(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+        img[:,:,0] = img[:,:,0] * 1.5
+        img[:,:,1] = img[:,:,1] * 1.5
+        img[:,:,2] = img[:,:,2] * 1.5
+        cv2.imwrite(f"hls-{ctx.user.id}.png", img)
+        await ctx.respond("HLS applied!")
+        f = hikari.File(f"hls-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"hls-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("cie", "Converts image to CIE.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def cie(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2XYZ)
+        img[:,:,0] = img[:,:,0] * 1.5
+        img[:,:,1] = img[:,:,1] * 1.5
+        img[:,:,2] = img[:,:,2] * 1.5
+        cv2.imwrite(f"cie-{ctx.user.id}.png", img)
+        await ctx.respond("CIE applied!")
+        f = hikari.File(f"cie-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"cie-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("corrupt", "Corrupts the image.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def corrupt(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        height, width, channels = img.shape
+        for x in range(0, width):
+            for y in range(0, height):
+                img[y, x] = (random.randint(0, 200), random.randint(0, 200), random.randint(0, 200))
+        cv2.imwrite(f"corrupted-{ctx.user.id}.png", img)
+        await ctx.respond("Corruption applied!")
+        f = hikari.File(f"corrupted-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"corrupted-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("stippling", "Adds a stippling effect to the image.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def stippling(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        height, width, channels = img.shape
+        for x in range(0, width):
+            for y in range(0, height):
+                if x % 2 == 0:
+                    img[y, x] = (random.randint(0, 200), random.randint(0, 200), random.randint(0, 200))
+        cv2.imwrite(f"stippling-{ctx.user.id}.png", )
+        await ctx.respond("Stippling applied!")
+        f = hikari.File(f"stippling-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"stippling-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("contraststretch", "Self explanatory.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def contraststretch(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (int(img[y, x][0] * 1.5), int(img[y, x][1] * 1.5), int(img[y, x][2] * 1.5))
+        cv2.imwrite(f"contraststretch-{ctx.user.id}.png", img)
+        await ctx.respond("Filter applied!")
+        f = hikari.File(f"contraststretch-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"contraststretch-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("quantize", "Quantizes the image.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def quantize(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (int(img[y, x][0] / 2) * 2, int(img[y, x][1] / 2) * 2, int(img[y, x][2] / 2) * 2)
+        cv2.imwrite(f"quantize-{ctx.user.id}.png", img)
+        await ctx.respond("Quantize applied!")
+        f = hikari.File(f"quantize-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"quantize-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("acidtrip", "Whoa man those are some mighty shrooms.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def acidtrip(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (int(math.pow(img[y, x][0], 1.5)), int(math.pow(img[y, x][1], 1.5)), int(math.pow(img[y, x][2], 1.5)))
+        cv2.imwrite(f"acidtrip-{ctx.user.id}.png", img)
+        await ctx.respond("Acid trip applied!")
+        f = hikari.File(f"acidtrip-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"acidtrip-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("bluechannel", "Filters by blue.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def bluechannel(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (img[y, x][0], 0, 0)
+        cv2.imwrite(f"bluechannel-{ctx.user.id}.png", img)
+        await ctx.respond("Blue colors filtered!")
+        f = hikari.File(f"bluechannel-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"bluechannel-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("redchannel", "Filters by red.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def redchannel(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (0, 0, img[y, x][2])
+        cv2.imwrite(f"redchannel-{ctx.user.id}.png", )
+        await ctx.respond("Red colors filtered!")
+        f = hikari.File(f"redchannel-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"redchannel-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("cyanchannel", "Filters the image by cyan.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def cyanchannel(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (img[y, x][0], img[y, x][2], 0)
+        cv2.imwrite(f"cyan-{ctx.user.id}.png", img)
+        await ctx.respond("Cyan filtered!")
+        f = hikari.File(f"cyan-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"cyan-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("purplechannel", "Filters the image by purple.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def purplechannel(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        h, w, c = img.shape
+        for x in range(0, w):
+            for y in range(0, h):
+                img[y, x] = (img[y, x][1], 0, img[y, x][2])
+        cv2.imwrite(f"purple-{ctx.user.id}.png", img)
+        await ctx.respond("Purple filter applied!")
+        f = hikari.File(f"purple-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"purple-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("scharr", "Applies scharr filter.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def scharr(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.Scharr(img, cv2.CV_8U, 1, 0)
+        cv2.imwrite(f"scharr-{ctx.user.id}.png", img)
+        await ctx.respond("Scharr applied!")
+        f = hikari.File(f"scharr-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"scharr-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("bubbles", "Applies bubbles filter.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def bubbles(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.bilateralFilter(img, 9, 75, 75)
+        cv2.imwrite(f"bubbles-{ctx.user.id}.png", img)
+        await ctx.respond("Bubbles applied!")
+        f = hikari.File(f"bubbles-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"bubbles-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("hough", "Uses HoughCircles.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def hough(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.GaussianBlur(img, (5, 5), 0)
+        circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 60, param1=50, param2=30, minRadius=0, maxRadius=0)
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
+        cv2.imwrite(f"hough-{ctx.user.id}.png", )
+        await ctx.respond("Hough circles applied!")
+        f = hikari.File(f"hough-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"hough-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
+@bot.command
+@lightbulb.command("mandelbrot", "Applies mandelbrot")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def mandelbrot(ctx: lightbulb.context.Context):
+    try:
+        img = cv2.imread(f"originalimage-{ctx.user.id}.png")
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        filter = cv2.bilateralFilter(gray, 9, 75, 75)
+        blur = cv2.medianBlur(filter, 5)
+        blur2 = cv2.GaussianBlur(blur, (5, 5), 0)
+        canny = cv2.Canny(blur2, 100, 200)
+        cv2.imwrite(f"mandelbrot-{ctx.user.id}.png", )
+        await ctx.respond("Mandelbrot applied!")
+        f = hikari.File(f"mandelbrot-{ctx.user.id}.png")
+        await ctx.respond(f)
+        time.sleep(1)
+        os.remove(f"mandelbrot-{ctx.user.id}.png")
+    except:
+        await ctx.respond("Error! Something went wrong." + traceback.format_exc())
+
 bot.run(
     activity=hikari.Activity(
         name="with photos.",
